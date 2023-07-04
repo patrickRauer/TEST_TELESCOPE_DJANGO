@@ -1,0 +1,16 @@
+{% extends 'htmx/one_column_inner_template.html' %}
+
+{% block head %}
+  Exposure
+{% endblock %}
+
+{% block content %}
+<form>
+  {%csrf_token %}
+  {{form}}
+  <div></div>
+  <button>
+    Start
+  </button>
+</form>
+{% endblock %}

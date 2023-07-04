@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    {% load static %}
+    <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.8/dist/semantic.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.8/dist/semantic.min.js"></script>
+    <script src="https://unpkg.com/htmx.org/dist/ext/ws.js"></script>
+    <script src="https://unpkg.com/htmx.org/dist/ext/multi-swap.js"></script>
+
+    <style>
+        :root {
+            --bg-color: rgba(20 20 20 / 100%);
+            --bg-color-content: rgba(50 50 50 / 75%);
+
+            --border-radius: 1rem;
+        }
+        .htmx_root {
+            padding: 2%;
+            height: 100%;
+            background-color: #8089ad !important;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+        nav {
+            display: flex;
+            border: solid 2px red;
+        }
+        nav > ul {
+            list-style: none;
+            padding: 2rem;
+        }
+        main {
+            display: flex;
+            flex-grow: 1;
+            flex-direction: column;
+            border: solid 2px green;
+        }
+        .app {
+            display: flex;
+            flex-direction: row;
+            flex-grow: 1;
+        }
+        .headline > ul {
+            display: flex;
+            flex-direction: row;
+            gap: 1.5rem;
+            list-style: none;
+        }
+        form {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            height: fit-content;
+            width: fit-content;
+            grid-column-gap: 1rem;
+            grid-row-gap: 0.5rem;
+        }
+        .content {
+            margin: 2rem;
+        }
+        .content-head {
+            margin: 0 auto;
+            padding-bottom: 1rem;
+        }
+        .status {
+            display: flex;
+            flex-direction: row;
+            gap: 2rem;
+        }
+        .status-card {
+            border-radius: var(--border-radius);
+            background-color: var(--bg-color-content);
+            padding: 0.5rem;
+        }
+        .status-head {
+            font-size: large;
+            padding-bottom: 1rem;
+        }
+        .status-ws {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            grid-column-gap: 1rem;
+            grid-row-gap: 0.5rem;
+        }
+        .status-ws >label::after {
+            content: ":";
+        }
+    </style>
+</head>
+<body>
+    <div class="headline">
+
+        <ul>
+            <li>
+                <a href="{% url 'main:index' %}" hx-get="{% url 'main:index' %}" hx-target="#htmx_root" hx-push-url="true">
+                    Home
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'observation:index' %}" hx-get="{% url 'observation:index' %}" hx-target="#htmx_root" hx-push-url="true">
+                    Observation
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'catalog:index' %}" hx-get="{% url 'catalog:index' %}" hx-target="#htmx_root" hx-push-url="true">
+                    Catalog
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'catalog:index' %}" hx-get="{% url 'main:index' %}" hx-target="#htmx_root" hx-push-url="true">
+                    Weather
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="app" id="htmx_root">
+        <nav>
+        <ul>
+            <li>
+                <a href="#">
+                    Item
+                </a>
+            </li>
+        </ul>
+        </nav>
+        <main id="htmx_content">
+            {% if inner_template %}
+                {% include inner_template %}
+            {% endif %}
+        </main>
+    </div>
+
+</body>
+</html>

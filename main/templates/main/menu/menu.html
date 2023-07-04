@@ -1,0 +1,13 @@
+<a class="item">
+    Home <i class="icon home"></i>
+</a>
+<a class="item" hx-get="">
+    test
+</a>
+<button hx-get=""
+                        hx-target="#replaceMe"
+                        hx-swap="outerHTML">testb</button>
+
+{% for item in navbar %}
+    {% include 'main/menu/item.html' %}
+{% endfor %}

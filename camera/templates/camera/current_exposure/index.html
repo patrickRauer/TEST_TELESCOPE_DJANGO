@@ -1,0 +1,13 @@
+{% extends 'htmx/one_column_inner_template.html' %}
+
+{% block content %}
+  <form class="ui form">
+    {% csrf_token %}
+    {{form}}
+    <p>
+      <button type="submit" hx-post="{% url 'camera:current_exposure' image_id=image.id %}" hx-trigger="click" hx-target="#htmx_root">
+        Abort
+      </button>
+    </p>
+  </form>
+{% endblock %}

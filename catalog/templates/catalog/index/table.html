@@ -1,0 +1,26 @@
+<table class="ui celled structured table">
+    <thread>
+        <tr>
+            <th>
+                Name
+            </th>
+            <th>
+                last observation
+            </th>
+        </tr>
+    </thread>
+    <tbody>
+        {% for item in catalog_items %}
+            <tr>
+                <td>
+                    <a>
+                        {{item.name}}
+                    </a>
+                </td>
+                <td>
+                    {{item.last_observation }}
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

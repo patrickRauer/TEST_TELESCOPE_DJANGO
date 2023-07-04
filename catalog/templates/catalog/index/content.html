@@ -1,0 +1,41 @@
+{% extends 'main/htmx_two_column.html' %}
+
+{% block left_column %}
+    <h1 class="ui center aligned header">
+        Catalog
+    </h1>
+    <div class="ui right floated">
+        test
+    </div>
+    <form class="ui right floated form">
+        <div class="field">
+            <label>Style</label>
+            <div class="ui search selection dropdown">
+                <input type="hidden" name="style" hx-get="{% url 'catalog:content' %}" hx-trigger="change" hx-target="#catalog">
+                <i class="dropdown icon"></i>
+                <div class="default text">
+                    List
+                </div>
+                <div class="menu">
+                    <div class="item" data-value="list">List</div>
+                    <div class="item" data-value="card">Card</div>
+                    <div class="item" data-value="table">Table</div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div id="catalog" hx-get="{% url 'catalog:content' %}" hx-trigger="load">
+        <div class="ui active loader"></div>
+        {% include 'catalog/index/list.html' %}
+        {% include 'catalog/index/card.html' %}
+        {% include 'catalog/index/table.html' %}
+    </div>
+
+    <script>
+        $('.ui.dropdown').dropdown();
+    </script>
+{% endblock %}
+
+{% block right_column %}
+    <div id="details"></div>
+{% endblock %}

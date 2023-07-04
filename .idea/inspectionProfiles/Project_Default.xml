@@ -1,0 +1,61 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <value>
+          <list size="6">
+            <item index="0" class="java.lang.String" itemvalue="serial" />
+            <item index="1" class="java.lang.String" itemvalue="hypothesis" />
+            <item index="2" class="java.lang.String" itemvalue="numba" />
+            <item index="3" class="java.lang.String" itemvalue="seaborn" />
+            <item index="4" class="java.lang.String" itemvalue="setuptools" />
+            <item index="5" class="java.lang.String" itemvalue="django-filter" />
+          </list>
+        </value>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyTypeCheckerInspection" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredIdentifiers">
+        <list>
+          <option value="tuple.imshow" />
+          <option value="tuple.set_ylabel" />
+          <option value="tuple.set_xlabel" />
+          <option value="tuple.hist" />
+          <option value="tuple.scatter" />
+          <option value="tuple.set_ylim" />
+          <option value="tuple.set_xlim" />
+          <option value="tuple.contour" />
+          <option value="tuple.set_xticks" />
+          <option value="tuple.set_yticks" />
+          <option value="astropy.units.pc" />
+          <option value="astropy.units.km" />
+          <option value="astropy.units.mas" />
+          <option value="astropy.units.yr" />
+          <option value="astropy.units.deg" />
+          <option value="dict.__getitem__" />
+          <option value="property.setter" />
+          <option value="sensors.models.Sensor.objects" />
+          <option value="pi_server.corona.models.Place.objects" />
+          <option value="pi_server.corona.models.Data.objects" />
+          <option value="django.db.models.fields.related.ForeignKey.to_dict" />
+          <option value="pi_server.sensors.models.Sensor.objects" />
+          <option value="pi_server.sensors.boards.overview.board.sensors" />
+          <option value="filter_wheel.models.Filter.objects" />
+          <option value="archive.models.Image.objects" />
+          <option value="archive.models.ImageTye.objects" />
+          <option value="catalog.models.Source.objects" />
+          <option value="observation.models.ObservationList.objects" />
+          <option value="astropy.units.m" />
+          <option value="camera.models.Monitoring.objects" />
+          <option value="camera.models.ReadoutTime.objects" />
+          <option value="camera.models.SubFrame.objects" />
+          <option value="camera.models.Camera.objects" />
+          <option value="weather.models.Station.objects" />
+          <option value="weather.models.Data.objects" />
+        </list>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>

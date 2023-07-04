@@ -1,0 +1,9 @@
+{% extends 'htmx/one_column_inner_template.html' %}
+
+{% block head %}
+  Mount
+{% endblock %}
+
+{% block content %}
+  <div hx-get="{% url 'mount:slew' %}" hx-trigger="load"></div>
+{% endblock %}

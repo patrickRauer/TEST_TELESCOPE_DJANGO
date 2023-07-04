@@ -1,0 +1,6 @@
+<a class="item" {% if item.hx %}{% include 'main/menu/hx_attributes.html' with attributes=item.hx %}{% else %}href="{{ item.url }}"{% endif %}>
+    {{ item.label }}
+    {% if item.icon %}
+        <i class="icon {{item.icon }}"></i>
+    {% endif %}
+</a>

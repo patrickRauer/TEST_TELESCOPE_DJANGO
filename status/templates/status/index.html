@@ -1,0 +1,35 @@
+<div id="mount_status" class="status-ws">
+    <label>Status</label>
+    <span>{{mount.status.status}}</span>
+    <label>Ra/Dec</label>
+    <span>{{mount.status.ra}} / {{mount.status.dec}}</span>
+    <label>Alt/Az</label>
+    <span>{{mount.status.alt}} / {{mount.status.az}}</span>
+</div>
+
+<div id="camera_status" class="status-ws">
+    <label>Status</label>
+    <span>{{camera.status.status}}</span>
+    <label>Temperature</label>
+    <span>-{{camera.status.temperature}}</span>
+    <label>Cooler</label>
+    <span>{{camera.status.cooler}}</span>
+</div>
+
+<div id="filter_wheel_status" class="status-ws">
+    <label>Position</label>
+    <span>{{filter_wheel.status.position}}</span>
+    <label>Name</label>
+    <span>{{filter_wheel.status.name}}</span>
+</div>
+
+<div id="dome_status" class="status-ws">
+
+</div>
+
+<div id="weather_status">
+    <label>Temperature</label>
+    <span>{{weather.status.temperature.in}}/{{weather.status.temperature.out}}</span>
+    <label>Humidity</label>
+    <span>{{weather.status.humidity.in}}/{{weather.status.humidity.out}}</span>
+</div>

@@ -1,0 +1,20 @@
+<div class="ui relaxed divided list">
+    {% for item in catalog_items %}
+        <div class="item">
+            <div class="content">
+                <a class="header">
+                    {{ item.name }}
+                    <div class="right floated">
+                        test
+                    </div>
+                </a>
+                <div class="description">
+                    {{ item.last_observation }}
+                </div>
+            </div>
+            <div class="right floated content">
+                {{ item.last_observation }}
+            </div>
+        </div>
+    {% endfor %}
+</div>
