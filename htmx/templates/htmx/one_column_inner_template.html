@@ -13,56 +13,6 @@
   {% block content %}
 
   {% endblock %}
-  <div class="status" hx-ext="multi-swap" hx-swap="multi:#camera_status,#mount_status,#filter_wheel_status,#weather_status,#dome_status" hx-trigger="every 1s" hx-get="{% url 'status:device' %}">
-    {% component_block 'status_card' head='Camera' %}
-      {% fill 'content' %}
-        <div id="camera_status" class="status-ws" hx-get="{% url 'camera:status' %}" hx-trigger="load" hx-swap="innerHTML">
 
-        </div>
-        <!--<div class="status-ws" hx-ext="ws" ws-connect="/ws/status/camera/">
-          <label>Status</label>
-          <span>Ideal</span>
-          <label>Temperature</label>
-          <span>-10</span>
-          <label>Cooler</label>
-          <span>On</span>
-        </div>-->
-      {% endfill %}
-    {% endcomponent_block %}
-    {% component_block 'status_card' head='Fiter wheel' %}
-      {% fill 'content' %}
-        <div id="filter_wheel_status" class="status-ws">
-
-        </div>
-      {% endfill %}
-
-    {% endcomponent_block %}
-    {% component_block 'status_card' head='Mount' %}
-      {% fill 'content' %}
-        <div id="mount_status" class="status-ws" hx-get="{% url 'mount:status' %}" hx-trigger="load" hx-swap="innerHTML">
-
-        </div>
-        <!--<div class="status-ws" hx-ext="ws" ws-connect="/ws/status/mount/">
-          <label>Status</label>
-          <span>Trackking</span>
-          <label>Ra/Dec</label>
-          <span>-10</span>
-          <label>Alt/Az</label>
-          <span>On</span>
-        </div>-->
-      {% endfill %}
-    {% endcomponent_block %}
-    {% component_block 'status_card' head='Dome' %}
-      {% fill 'content' %}
-        <div id="dome_status" class="status-ws"></div>
-      {% endfill %}
-    {% endcomponent_block %}
-    {% component_block 'status_card' head='Weather' %}
-      {% fill 'content' %}
-        <div id="weather_status" class="status-ws"></div>
-      {% endfill %}
-
-    {% endcomponent_block %}
-  </div>
 
 </div>
