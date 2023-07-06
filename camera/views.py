@@ -1,14 +1,14 @@
 from django.shortcuts import render
 from django.http.response import HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import FormView, TemplateView
+from django.views.generic import FormView, TemplateView, UpdateView
 from django.urls import reverse_lazy
 from htmx.views import HTMXMixin
 
 from filter_wheel.models import FilterWheel as FilterWheelDB
 from mount.models import Mount
 from .models import Camera as CameraDB, Frame, Image
-from .forms import ImageForm, AbortForm
+from .forms import ImageForm, AbortForm, CameraForm
 
 from alpaca.camera import Camera
 from alpaca.filterwheel import FilterWheel
@@ -17,8 +17,32 @@ from alpaca.telescope import Telescope
 # Create your views here.
 
 
-class CameraIndexView(LoginRequiredMixin, HTMXMixin, TemplateView):
-    template_name = ''
+class CameraIndexView(LoginRequiredMixin, HTMXMixin, FormView):
+    template_name = 'camera/index/index.html'
+    form_class = CameraForm
+    success_url = reverse_lazy('camera:index')
+    camera_entry = None
+    
+    def dispatch(self, request, *args, **kwargs):
+        self.camera_entry = CameraDB.objects.last()
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_initial(self):
+        return {
+            'id': self.camera_entry.id,
+            'name': self.camera_entry.name,
+            'ip': self.camera_entry.ip,
+            'port': self.camera_entry.port,
+            'device_id': self.camera_entry.device_id
+        }
+
+    def form_valid(self, form):
+        self.camera_entry.name = form.data['name']
+        self.camera_entry.ip = form.data['ip']
+        self.camera_entry.port = form.data['port']
+        self.camera_entry.device_id = form.data['device_id']
+        self.camera_entry.save()
+        return super().form_valid(form)
 
 
 class CameraStatusView(LoginRequiredMixin, HTMXMixin, TemplateView):

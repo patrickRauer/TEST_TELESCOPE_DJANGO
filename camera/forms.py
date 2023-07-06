@@ -1,4 +1,13 @@
 from django import forms
+from .models import Camera
+
+
+class CameraForm(forms.ModelForm):
+    class Meta:
+        model = Camera
+        fields = '__all__'
+
+    id = forms.IntegerField(widget=forms.HiddenInput())
 
 
 class ImageForm(forms.Form):
