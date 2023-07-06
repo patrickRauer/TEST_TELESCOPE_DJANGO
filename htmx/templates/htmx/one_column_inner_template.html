@@ -4,6 +4,15 @@
 
 <div class="content">
 
+  <h1 class="content-head">
+    {% block head %}
+      {{head}}
+    {% endblock %}
+  </h1>
+
+  {% block content %}
+
+  {% endblock %}
   <div class="status" hx-ext="multi-swap" hx-swap="multi:#camera_status,#mount_status,#filter_wheel_status,#weather_status,#dome_status" hx-trigger="every 1s" hx-get="{% url 'status:device' %}">
     {% component_block 'status_card' head='Camera' %}
       {% fill 'content' %}
@@ -56,13 +65,4 @@
     {% endcomponent_block %}
   </div>
 
-  <h1 class="content-head">
-    {% block head %}
-      {{head}}
-    {% endblock %}
-  </h1>
-
-  {% block content %}
-
-  {% endblock %}
 </div>
