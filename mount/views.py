@@ -2,7 +2,7 @@ from django.views.generic import TemplateView, FormView
 from django.conf import settings
 from htmx.views import HTMXMixin
 from .forms import SlewForm, ParkForm
-from .models import Coordinate
+from .models import Coordinate, Mount
 
 from alpaca.telescope import Telescope
 # Create your views here.
@@ -108,7 +108,8 @@ class StatusView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        mount = Telescope(settings.MOUNT_IP_PORT, 0)
+        mount = Mount.objects.last()
+        mount = Telescope(f'{mount.ip}:{mount.port}', mount.device_id)
         if not mount.Connected:
             status = 'Unconnected'
         elif mount.Tracking:
