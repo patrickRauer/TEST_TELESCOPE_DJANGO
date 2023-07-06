@@ -4,7 +4,7 @@
 
 <div class="content">
 
-  <div class="status" hx-ext="multi-swap" hx-swap="multi:#camera_status,#mount_status,#filter_wheel_status,#weather_status" hx-trigger="every 1s" hx-get="{% url 'status:device' %}">
+  <div class="status" hx-ext="multi-swap" hx-swap="multi:#camera_status,#mount_status,#filter_wheel_status,#weather_status,#dome_status" hx-trigger="every 1s" hx-get="{% url 'status:device' %}">
     {% component_block 'status_card' head='Camera' %}
       {% fill 'content' %}
         <div id="camera_status" class="status-ws" hx-get="{% url 'camera:status' %}" hx-trigger="load" hx-swap="innerHTML">
@@ -44,7 +44,9 @@
       {% endfill %}
     {% endcomponent_block %}
     {% component_block 'status_card' head='Dome' %}
-
+      {% fill 'content' %}
+        <div id="dome_status" class="status-ws"></div>
+      {% endfill %}
     {% endcomponent_block %}
     {% component_block 'status_card' head='Weather' %}
       {% fill 'content' %}

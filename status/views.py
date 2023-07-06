@@ -57,6 +57,14 @@ class StatusView(LoginRequiredMixin, TemplateView):
             }
         }
 
+    def get_dome_status(self):
+        return {
+            'status':  {
+                'open': False,
+                'az': '00:00:00',
+            }
+        }
+
     def hour2(self, hour_float):
         hour = int(hour_float)
         minutes = abs(hour_float-hour)*60
@@ -83,7 +91,7 @@ class StatusView(LoginRequiredMixin, TemplateView):
         elif mount.AtPark:
             status = 'Parked'
         else:
-            status = 'Unknown'
+            status = 'Stopped'
         return {
             'status': {
                 'status': status,
@@ -99,5 +107,6 @@ class StatusView(LoginRequiredMixin, TemplateView):
         context['camera'] = self.get_camera_status()
         context['mount'] = self.get_mount_status()
         context['filter_wheel'] = self.get_filter_wheel_status()
+        context['dome'] = self.get_dome_status()
         context['weather'] = self.get_weather_status()
         return context
