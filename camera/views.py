@@ -17,6 +17,10 @@ from alpaca.telescope import Telescope
 # Create your views here.
 
 
+class CameraIndexView(LoginRequiredMixin, HTMXMixin, TemplateView):
+    template_name = ''
+
+
 class CameraStatusView(LoginRequiredMixin, HTMXMixin, TemplateView):
     template_name = 'camera/status/index.html'
 

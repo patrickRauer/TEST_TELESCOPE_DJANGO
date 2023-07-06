@@ -113,22 +113,28 @@
                 </a>
             </li>
             <li>
-                <a href="{% url 'catalog:index' %}" hx-get="{% url 'main:index' %}" hx-target="#htmx_root" hx-push-url="true">
+                <a href="{% url 'catalog:index' %}" hx-get="{% url 'catalog:index' %}" hx-target="#htmx_root" hx-push-url="true">
                     Weather
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'camera:index' %}" hx-get="{% url 'camera:index' %}" hx-target="#htmx_root" hx-push-url="true">
+                    Camera
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'mount:index' %}" hx-get="{% url 'mount:index' %}" hx-target="#htmx_root" hx-push-url="true">
+                    Mount
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'dome:index' %}" hx-get="{% url 'mount:index' %}" hx-target="#htmx_root" hx-push-url="true">
+                    Dome
                 </a>
             </li>
         </ul>
     </div>
     <div class="app" id="htmx_root">
-        <nav>
-        <ul>
-            <li>
-                <a href="#">
-                    Item
-                </a>
-            </li>
-        </ul>
-        </nav>
         <main id="htmx_content">
             {% if inner_template %}
                 {% include inner_template %}
