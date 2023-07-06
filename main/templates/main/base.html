@@ -16,17 +16,19 @@
         :root {
             --bg-color: rgba(20 20 20 / 100%);
             --bg-color-content: rgba(50 50 50 / 75%);
+            --text-color: rgba(220 220 220 / 80%);
 
             --border-radius: 1rem;
         }
         .htmx_root {
             padding: 2%;
             height: 100%;
-            background-color: #8089ad !important;
         }
         body {
             display: flex;
             flex-direction: column;
+            color: var(--text-color);
+            background-color: var(--bg-color);
         }
         nav {
             display: flex;
@@ -35,6 +37,15 @@
         nav > ul {
             list-style: none;
             padding: 2rem;
+        }
+        .nav-item-link {
+            font-size: large;
+            border-radius: var(--border-radius);
+            padding: 0.25rem;
+            transition: 0.5s ease;
+        }
+        .nav-item-link:hover {
+            background-color: var(--bg-color-content);
         }
         main {
             display: flex;
@@ -99,37 +110,37 @@
 
         <ul>
             <li>
-                <a href="{% url 'main:index' %}" hx-get="{% url 'main:index' %}" hx-target="#htmx_root" hx-push-url="true">
+                <a class="nav-item-link" href="{% url 'main:index' %}" hx-get="{% url 'main:index' %}" hx-target="#htmx_root" hx-push-url="true">
                     Home
                 </a>
             </li>
             <li>
-                <a href="{% url 'observation:index' %}" hx-get="{% url 'observation:index' %}" hx-target="#htmx_root" hx-push-url="true">
+                <a class="nav-item-link" href="{% url 'observation:index' %}" hx-get="{% url 'observation:index' %}" hx-target="#htmx_root" hx-push-url="true">
                     Observation
                 </a>
             </li>
             <li>
-                <a href="{% url 'catalog:index' %}" hx-get="{% url 'catalog:index' %}" hx-target="#htmx_root" hx-push-url="true">
+                <a class="nav-item-link" href="{% url 'catalog:index' %}" hx-get="{% url 'catalog:index' %}" hx-target="#htmx_root" hx-push-url="true">
                     Catalog
                 </a>
             </li>
             <li>
-                <a href="{% url 'catalog:index' %}" hx-get="{% url 'catalog:index' %}" hx-target="#htmx_root" hx-push-url="true">
+                <a class="nav-item-link" href="{% url 'catalog:index' %}" hx-get="{% url 'catalog:index' %}" hx-target="#htmx_root" hx-push-url="true">
                     Weather
                 </a>
             </li>
             <li>
-                <a href="{% url 'camera:index' %}" hx-get="{% url 'camera:index' %}" hx-target="#htmx_root" hx-push-url="true">
+                <a class="nav-item-link" href="{% url 'camera:index' %}" hx-get="{% url 'camera:index' %}" hx-target="#htmx_root" hx-push-url="true">
                     Camera
                 </a>
             </li>
             <li>
-                <a href="{% url 'mount:index' %}" hx-get="{% url 'mount:index' %}" hx-target="#htmx_root" hx-push-url="true">
+                <a class="nav-item-link" href="{% url 'mount:index' %}" hx-get="{% url 'mount:index' %}" hx-target="#htmx_root" hx-push-url="true">
                     Mount
                 </a>
             </li>
             <li>
-                <a href="{% url 'dome:index' %}" hx-get="{% url 'mount:index' %}" hx-target="#htmx_root" hx-push-url="true">
+                <a class="nav-item-link" href="{% url 'dome:index' %}" hx-get="{% url 'mount:index' %}" hx-target="#htmx_root" hx-push-url="true">
                     Dome
                 </a>
             </li>
