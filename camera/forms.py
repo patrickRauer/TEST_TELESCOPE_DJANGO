@@ -1,5 +1,6 @@
 from django import forms
 from .models import Camera
+from filter_wheel.models import Filter
 
 
 class CameraForm(forms.ModelForm):
@@ -20,7 +21,10 @@ class ImageForm(forms.Form):
     bin_x = forms.IntegerField(min_value=1, max_value=4, initial=1)
     bin_y = forms.IntegerField(min_value=1, max_value=4, initial=1)
 
+    filter = forms.ModelChoiceField(Filter.objects)
+
     exposure_time = forms.FloatField(min_value=1, max_value=600, initial=1, help_text='Exposure time in seconds')
+    repeats = forms.IntegerField(min_value=1, max_value=20, initial=1, help_text='Number of images taken in a row')
 
     dark = forms.BooleanField(required=False)
 
