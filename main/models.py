@@ -11,3 +11,6 @@ class AbstractTelescopeDevice(models.Model):
     port = models.PositiveSmallIntegerField(default=32323, help_text='Used port of the device')
 
     device_id = models.PositiveSmallIntegerField(help_text='Device ID of the device')
+
+    def __str__(self):
+        return f'{self.name} ({self.ip}:{self.port})'

@@ -16,6 +16,9 @@ class Filter(models.Model):
 
     flat_time = models.FloatField()
 
+    def __str__(self):
+        return f'{self.name} ({self.letter})'
+
 
 class DarkImage(models.Model):
     observing_time = models.FloatField()
