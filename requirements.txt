@@ -6,3 +6,5 @@ django-extensions
 django-components
 django-debug-toolbar
 alpyca
+celery
+astropy
