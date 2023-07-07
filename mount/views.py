@@ -58,7 +58,8 @@ class SlewFormView(HTMXMixin, FormView):
         return value
 
     def form_valid(self, form):
-        mount = Telescope(settings.MOUNT_IP_PORT, 0)
+        mount = Mount.objects.last()
+        mount = Telescope(f'{mount.ip}:{mount.port}', mount.device_id)
         if mount.Slewing:
             form.add_error('ra', 'Telescope is already slewing')
             return self.form_invalid(form)
@@ -83,7 +84,8 @@ class ParkFormView(HTMXMixin, FormView):
         return ''
 
     def form_valid(self, form):
-        mount = Telescope(settings.MOUNT_IP_PORT, 0)
+        mount = Mount.objects.last()
+        mount = Telescope(f'{mount.ip}:{mount.port}', mount.device_id)
         mount.Park()
         response = super().form_valid(form)
         return response
