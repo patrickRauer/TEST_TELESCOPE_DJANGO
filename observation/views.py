@@ -3,11 +3,19 @@ from django.views.generic import TemplateView, FormView
 from htmx.views import HTMXMixin
 
 from .forms import ObservationForm
+from mount.forms import SlewForm
+from camera.forms import ImageForm
 
 
 # Create your views here.
 class IndexView(HTMXMixin, TemplateView):
     template_name = 'observation/index.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['slew'] = {'form': SlewForm()}
+        context['image'] = {'form': ImageForm()}
+        return context
 
 
 class StartExposureFormView(HTMXMixin, FormView):
