@@ -5,5 +5,37 @@
 {% endblock %}
 
 {% block content %}
-
+<div class="grid">
+  <div class="column">
+    <div id="exposure">
+      <h3>Slew</h3>
+      <form>
+        {% csrf_token %}
+        {{ slew.form }}
+        <div></div>
+        <button type="submit" hx-post="{% url 'mount:slew' %}" hx-trigger="click" hx-swap="none">
+          Slew
+        </button>
+      </form>
+    </div>
+    <div>
+      <h3>
+        Exposure
+      </h3>
+      <form>
+        {% csrf_token %}
+        {{image.form}}
+        <div></div>
+        <button type="submit" hx-post="{% url 'camera:exposure' %}" hx-trigger="click" hx-swap="none">
+          Start exposure
+        </button>
+      </form>
+    </div>
+  </div>
+  <div class="column">
+    <div>Graphical presentation</div>
+    <div>visibility chart</div>
+    <div>pointing chart</div>
+  </div>
+</div>
 {% endblock %}
