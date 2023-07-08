@@ -4,7 +4,7 @@ from pathlib import Path
 from astropy.io import fits
 from filter_wheel.models import FilterWheel as FilterWheelDB
 from mount.models import Mount
-from .models import Camera as CameraDB, Image, ImageSettings, ReadOutTime
+from .models import Camera as CameraDB, Image, ImageSettings, ReadOutTime, Temperature
 import time
 
 from alpaca.camera import Camera
@@ -121,3 +121,20 @@ def perform_exposures(image_settings_id: int):
 
     for i in range(image_settings.repeats):
         _take_image(image_settings, camera)
+
+
+@shared_task
+def track_camera_temperature():
+    """
+    Reads CCD temperature of the camera and if the cooler of the camera is on and
+    stores the data into the database.
+    """
+    filter_wheel, camera = _get_devices()
+    temperature = camera.CCDTemperature
+    cooler_on = camera.CoolerOn
+
+    Temperature.objects.create(
+        temperature=temperature,
+        cooler_on=cooler_on,
+        camera=Camera.objects.last()
+    )
