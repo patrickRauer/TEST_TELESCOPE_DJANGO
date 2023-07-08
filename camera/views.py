@@ -1,4 +1,5 @@
-from django.shortcuts import render
+import time
+
 from django.http.response import HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import FormView, TemplateView, UpdateView
@@ -7,8 +8,9 @@ from htmx.views import HTMXMixin
 
 from filter_wheel.models import FilterWheel as FilterWheelDB
 from mount.models import Mount
-from .models import Camera as CameraDB, Frame, Image
+from .models import Camera as CameraDB, Frame, ImageSettings, Image
 from .forms import ImageForm, AbortForm, CameraForm
+from .tasks import perform_exposures
 
 from alpaca.camera import Camera
 from alpaca.filterwheel import FilterWheel
@@ -73,7 +75,7 @@ class TakeImageFormView(LoginRequiredMixin, HTMXMixin, FormView):
         image_id = self.image.id
         return reverse_lazy('camera:current_exposure', kwargs={'image_id': image_id})
 
-    def form_valid(self, form):
+    def form_valid(self, form: ImageForm):
         filter_wheel = FilterWheelDB.objects.last()
         filter_wheel = FilterWheel(f'{filter_wheel.ip}:{filter_wheel.port}', filter_wheel.device_id)
         if filter_wheel.Position == -1:
@@ -89,27 +91,21 @@ class TakeImageFormView(LoginRequiredMixin, HTMXMixin, FormView):
         if camera.CameraState != 0:
             return HttpResponse(b'Camera is busy', status=400)
 
-        data = form.data
-        camera.StartX = data['start_x']
-        camera.StartY = data['start_y']
-        camera.NumX = data['width']
-        camera.NumY = data['height']
-        camera.BinX = data['bin_x']
-        camera.BinY = data['bin_y']
-        camera.StartExposure(
-            form.data['exposure_time'], 'dark' not in data
-        )
+        data = form.cleaned_data
         frame, _ = Frame.objects.get_or_create(
             start_x=data['start_x'], start_y=data['start_y'],
             width=data['width'], height=data['height'],
             bin_x=data['bin_x'], bin_y=data['bin_y']
         )
-        self.image = Image.objects.create(
+        self.image = ImageSettings.objects.create(
             exposure_time=data['exposure_time'],
             frame=frame,
-            dark='dark' not in data
+            filter=data['filter'],
+            repeats=data['repeats'],
+            dark='dark' not in data,
+            observer=self.request.user
         )
-
+        perform_exposures.delay(self.image.id)
         return super().form_valid(form)
 
 
