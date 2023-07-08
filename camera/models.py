@@ -45,6 +45,8 @@ class AbstractImage(models.Model):
 
     dark = models.BooleanField(blank=True, default=False)
 
+    observer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+
     started_at = models.DateTimeField(auto_now_add=True)
     finished_at = models.DateTimeField(null=True)
 
@@ -68,5 +70,4 @@ class Image(AbstractImage):
 class ImageSettings(AbstractImage):
     repeats = models.PositiveSmallIntegerField(default=1)
     images_done = models.PositiveSmallIntegerField(default=0)
-    observer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
