@@ -12,6 +12,13 @@ class Camera(AbstractTelescopeDevice):
     pass
 
 
+class Temperature(models.Model):
+    temperature = models.FloatField()
+    cooler_on = models.BooleanField()
+    date = models.DateTimeField(auto_now_add=True)
+    camera = models.ForeignKey(Camera, on_delete=models.CASCADE)
+
+
 class Frame(models.Model):
 
     start_x = models.PositiveIntegerField(default=0)
