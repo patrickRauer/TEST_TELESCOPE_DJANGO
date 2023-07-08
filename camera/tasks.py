@@ -1,5 +1,6 @@
 from django.utils import timezone
-from celery import shared_task
+from os import environ
+from pathlib import Path
 from astropy.io import fits
 from filter_wheel.models import FilterWheel as FilterWheelDB
 from mount.models import Mount
@@ -9,17 +10,46 @@ import time
 from alpaca.camera import Camera
 from alpaca.filterwheel import FilterWheel
 from alpaca.telescope import Telescope
+if 'REDIS_URL' in environ:
+    from celery import shared_task
+else:
+    from threading import Thread
+
+
+    class AsyncTask(Thread):
+        args = None
+        kwargs = None
+
+        def __init__(self, func):
+            super().__init__()
+            self.func = func
+
+        def run(self) -> None:
+            self.func(*self.args, **self.kwargs)
+
+        def delay(self, *args, **kwargs):
+            self.args = args
+            self.kwargs = kwargs
+            self.start()
+
+    def shared_task(func):
+
+        return AsyncTask(func)
 
 
 class ExposureError(Exception):
     ...
 
 
-@shared_task
-def perform_exposures(image_settings_id: int):
-    image_settings: ImageSettings = ImageSettings.objects.get(pk=image_settings_id)
+def _get_devices():
     filter_wheel = FilterWheelDB.objects.last()
     filter_wheel = FilterWheel(f'{filter_wheel.ip}:{filter_wheel.port}', filter_wheel.device_id)
+    camera = CameraDB.objects.last()
+    camera = Camera(f'{camera.ip}:{camera.port}', camera.device_id)
+    return filter_wheel, camera
+
+
+def _check_devices(filter_wheel: FilterWheel, camera: Camera):
     if filter_wheel.Position == -1:
         raise ExposureError(b'Filter wheel moving')
 
@@ -28,10 +58,13 @@ def perform_exposures(image_settings_id: int):
     if telescope.Slewing:
         raise ExposureError(b'Telescope slewing')
 
-    camera = CameraDB.objects.last()
-    camera = Camera(f'{camera.ip}:{camera.port}', camera.device_id)
     if camera.CameraState != 0:
+        print(camera.CameraState)
+        print(camera.CameraState.__doc__)
         raise ExposureError(b'Camera is busy')
+
+
+def _apply_image_settings(image_settings: ImageSettings, filter_wheel: FilterWheel, camera: Camera):
 
     filter_wheel.Position = image_settings.filter.position
     while filter_wheel.Position == -1:
@@ -43,30 +76,48 @@ def perform_exposures(image_settings_id: int):
     camera.BinX = image_settings.frame.bin_x
     camera.BinY = image_settings.frame.bin_y
 
-    for i in range(image_settings.repeats):
-        camera.StartExposure(
-            image_settings.exposure_time,
-            image_settings.dark
-        )
-        image = Image.objects.create(
-            exposure_time=image_settings.exposure_time,
-            frame=image_settings.frame,
-            filter=image_settings.filter,
-            dark=image_settings.dark
-        )
-        while not camera.ImageReady:
-            time.sleep(0.5)
-        image.finished_at = timezone.now()
-        image.save()
-        readout_time = time.time()
-        image_data = camera.ImageArray
-        readout_time = time.time()-readout_time
-        ReadOutTime.objects.freate(
-            frame=image_settings.frame,
-            seconds=readout_time
-        )
 
-        fits_file = fits.PrimaryHDU(data=image_data, header=image.to_fits_header())
-        path = f'./images/{image.started_at}.fits'
-        fits_file.writeto(path)
-        image.fits_file = open(path)
+def _take_image(image_settings: ImageSettings, camera: Camera):
+    camera.StartExposure(
+        image_settings.exposure_time,
+        image_settings.dark
+    )
+    image = Image.objects.create(
+        exposure_time=image_settings.exposure_time,
+        frame=image_settings.frame,
+        filter=image_settings.filter,
+        dark=image_settings.dark,
+        observer=image_settings.observer
+    )
+    while not camera.ImageReady:
+        time.sleep(0.5)
+    image.finished_at = timezone.now()
+    image.save()
+    readout_time = time.time()
+    image_data = camera.ImageArray
+    readout_time = time.time() - readout_time
+    ReadOutTime.objects.create(
+        frame=image_settings.frame,
+        seconds=readout_time
+    )
+
+    header = fits.Header(image.to_fits_header())
+    fits_file = fits.PrimaryHDU(data=image_data, header=header)
+    path = Path(f'./images/{image.started_at}.fits')
+    if not path.parent.exists():
+        path.parent.mkdir(parents=True)
+    fits_file.writeto(path)
+    image.fits_file.name = str(path.as_posix())
+    image.save()
+
+
+@shared_task
+def perform_exposures(image_settings_id: int):
+    image_settings: ImageSettings = ImageSettings.objects.get(pk=image_settings_id)
+    filter_wheel, camera = _get_devices()
+
+    _check_devices(filter_wheel, camera)
+    _apply_image_settings(image_settings, filter_wheel, camera)
+
+    for i in range(image_settings.repeats):
+        _take_image(image_settings, camera)
