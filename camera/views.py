@@ -4,12 +4,15 @@ from django.http.response import HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import FormView, TemplateView, UpdateView
 from django.urls import reverse_lazy
+from django.utils import timezone
 from htmx.views import HTMXMixin
+from plotly import express as px
+import pandas as pd
 
 from filter_wheel.models import FilterWheel as FilterWheelDB
 from mount.models import Mount
-from .models import Camera as CameraDB, Frame, ImageSettings, Image
-from .forms import ImageForm, AbortForm, CameraForm
+from .models import Camera as CameraDB, Frame, ImageSettings, Image, Temperature
+from .forms import ImageForm, AbortForm, CameraForm, CoolerForm
 from .tasks import perform_exposures
 
 from alpaca.camera import Camera
@@ -46,6 +49,13 @@ class CameraIndexView(LoginRequiredMixin, HTMXMixin, FormView):
         self.camera_entry.save()
         return super().form_valid(form)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['cooler'] = {
+            'form': CoolerForm()
+        }
+        return context
+
 
 class CameraStatusView(LoginRequiredMixin, HTMXMixin, TemplateView):
     template_name = 'camera/status/index.html'
@@ -62,6 +72,28 @@ class CameraStatusView(LoginRequiredMixin, HTMXMixin, TemplateView):
                 'cooler': camera.CoolerOn
             }
         }
+        return context
+
+
+class CameraTemperatureView(LoginRequiredMixin, TemplateView):
+    template_name = 'camera/index/graph.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        df = pd.DataFrame(
+            Temperature.objects.filter(date__gte=timezone.now()-timezone.timedelta(days=1)).values('date', 'temperature')
+        )
+        if len(df) == 0:
+            return context
+        fig = px.scatter(df, 'date', 'temperature')
+        fig.data[0].update(mode='markers+lines')
+        fig.update_layout(
+            {
+                'plot_bgcolor': 'rgba(0, 0, 0, 0)',
+                'paper_bgcolor': 'rgba(0, 0, 0, 0)',
+            }
+        )
+        context['graph'] = fig.to_json()
         return context
 
 

@@ -1,13 +1,32 @@
 {% extends 'htmx/one_column_inner_template.html' %}
 
 {% block content %}
+<div class="flex">
+
   <form class="ui form">
     {% csrf_token %}
     {{form}}
+    <div></div>
     <p>
-      <button type="submit" hx-post="{% url 'camera:index' %}" hx-trigger="click" hx-target="#htmx_root">
+      <button type="submit" class="ui button" hx-post="{% url 'camera:index' %}" hx-trigger="click" hx-target="#htmx_root">
         Update
       </button>
     </p>
   </form>
+
+  <form>
+    {% csrf_token %}
+    {{cooler.form}}
+    <div></div>
+    <p>
+      <button type="submit" class="ui button">
+        Set
+      </button>
+    </p>
+  </form>
+
+  <div class="flex-graph" hx-get="{% url 'camera:temperature_graph' %}" hx-trigger="load">
+
+  </div>
+</div>
 {% endblock %}

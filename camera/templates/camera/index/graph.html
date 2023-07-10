@@ -1,0 +1,16 @@
+{% if graph %}
+<div id="ccd_temperature"></div>
+
+<script>
+  function ccdGraph(){
+    Plotly.newPlot('ccd_temperature', {{ graph|safe}});
+  }
+  ccdGraph();
+</script>
+{% else %}
+<div>
+    <strong>
+        No temperature of the camera data available
+    </strong>
+</div>
+{% endif %}
