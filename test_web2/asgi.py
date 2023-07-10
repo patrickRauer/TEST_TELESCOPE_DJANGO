@@ -16,6 +16,7 @@ from channels.auth import AuthMiddlewareStack
 from channels.security.websocket import AllowedHostsOriginValidator
 
 from camera.routing import websocket_urlpatterns
+from observation.routing import websocket_urlpatterns
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'test_web2.settings')
 django_asgi_app = get_asgi_application()
