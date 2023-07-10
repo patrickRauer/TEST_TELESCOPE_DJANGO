@@ -11,6 +11,11 @@ class CameraForm(forms.ModelForm):
     id = forms.IntegerField(widget=forms.HiddenInput())
 
 
+class CoolerForm(forms.Form):
+    cooler_on = forms.BooleanField(required=False)
+    temperature = forms.FloatField(min_value=-40, max_value=40, initial=-20)
+
+
 class ImageForm(forms.Form):
     start_x = forms.IntegerField(min_value=0, max_value=4096, initial=0)
     start_y = forms.IntegerField(min_value=0, max_value=4096, initial=0)
