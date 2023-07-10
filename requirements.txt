@@ -5,7 +5,9 @@ pathlib
 django-extensions
 django-components
 django-debug-toolbar
+django_celery_beat
 alpyca
 celery
 astropy
 plotly
+pandas
