@@ -1,0 +1,82 @@
+{% extends 'htmx/one_column_inner_template.html' %}
+
+{% block head %}
+    Ongoing observation
+{% endblock %}
+
+
+{% block content %}
+<script>
+        var observationSocket = new WebSocket(
+            'ws://'
+            + window.location.host
+            + '/ws/observation/running/{{image.id}}/'
+        );
+
+        observationSocket.onmessage = function(e) {
+          console.log(e);
+            const data = JSON.parse(e.data);
+            if ('exposure_time' in data){
+              $('#current_exposure').progress('set progress', data.exposure_time);
+            }
+            if ('image_download' in data){
+              $('#image_download_progress').progress('set progress', data.image_download);
+            }
+            if ('images_done' in data){
+              $('#total_images_progress').progress('set progress', data.images_done);
+            }
+        };
+
+        observationSocket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+        };
+        function test_ws(){
+          observationSocket.send(JSON.stringify({
+                'message': 'test'
+            }));
+        }
+    </script>
+<button class="ui right floated red button" onclick="test_ws()">
+  Abort
+</button>
+<div class="flex">
+  <div>
+    <h3 class="ui center aligned header">
+      Image settings
+    </h3>
+    <div class="gap grid">
+      {% include 'observation/running/grid_row.html' with label='Name' value=image.name %}
+      {% include 'observation/running/grid_row.html' with label='Filter' value=image.name %}
+      {% include 'observation/running/grid_row.html' with label='Start X' value=image.frame.start_x %}
+      {% include 'observation/running/grid_row.html' with label='Start Y' value=image.frame.start_y %}
+      {% include 'observation/running/grid_row.html' with label='Width' value=image.frame.width %}
+      {% include 'observation/running/grid_row.html' with label='Height' value=image.frame.height %}
+      {% include 'observation/running/grid_row.html' with label='Bin X' value=image.frame.bin_x %}
+      {% include 'observation/running/grid_row.html' with label='Bin Y' value=image.frame.bin_y %}
+      {% include 'observation/running/grid_row.html' with label='Exposure time' value=image.exposure_time %}
+      {% include 'observation/running/grid_row.html' with label='Repeats' value=image.repeats %}
+    </div>
+  </div>
+  <div class="flex-graph">
+    <h3 class="ui center aligned header">
+      Progress
+    </h3>
+    <div id="current_exposure" class="ui indicating progress" data-value="0" data-total="{{image.exposure_time}}">
+      <div class="bar"></div>
+      <div class="label">Exposure</div>
+    </div><div id="image_download_progress" class="ui indicating progress" data-value="0" data-total="100">
+      <div class="bar"></div>
+      <div class="label">Image download</div>
+    </div><div id="total_images_progress" class="ui indicating progress" data-value="{{image.images_done}}" data-total="{{image.repeats}}">
+      <div class="bar"></div>
+      <div class="label">Images</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $('#current_exposure').progress();
+  $('#image_download_progress').progress();
+  $('#total_images_progress').progress();
+</script>
+{% endblock %}

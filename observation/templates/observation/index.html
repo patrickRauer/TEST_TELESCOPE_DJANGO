@@ -7,29 +7,33 @@
 {% block content %}
 <div class="grid">
   <div class="column">
-    <div id="exposure">
-      <h3>Slew</h3>
-      <form>
-        {% csrf_token %}
-        {{ slew.form }}
-        <div></div>
-        <button type="submit" hx-post="{% url 'mount:slew' %}" hx-trigger="click" hx-swap="none">
-          Slew
-        </button>
-      </form>
-    </div>
-    <div>
-      <h3>
-        Exposure
-      </h3>
-      <form>
-        {% csrf_token %}
-        {{image.form}}
-        <div></div>
-        <button type="submit" hx-post="{% url 'camera:exposure' %}" hx-trigger="click" hx-swap="none">
-          Start exposure
-        </button>
-      </form>
+    <div id="exposure" class="flex">
+
+      <div>
+        <h3>
+          Exposure
+        </h3>
+        <form>
+          {% csrf_token %}
+          {{image.form}}
+          <div></div>
+          <button type="submit" hx-post="{% url 'observation:start_exposure' %}" hx-trigger="click" hx-swap="innerHTML" hx-target="#htmx_root" hx-push-url="true">
+            Start exposure
+          </button>
+        </form>
+      </div>
+      <div>
+
+        <h3>Slew</h3>
+        <form>
+          {% csrf_token %}
+          {{ slew.form }}
+          <div></div>
+          <button type="submit" hx-post="{% url 'mount:slew' %}" hx-trigger="click" hx-swap="none">
+            Slew
+          </button>
+        </form>
+      </div>
     </div>
   </div>
   <div class="column">

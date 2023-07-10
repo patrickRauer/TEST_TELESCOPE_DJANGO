@@ -1,14 +1,18 @@
 from django.shortcuts import render
 from django.views.generic import TemplateView, FormView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse_lazy
 from htmx.views import HTMXMixin
 
 from .forms import ObservationForm
 from mount.forms import SlewForm
 from camera.forms import ImageForm
+from camera.models import Image, ImageSettings
+from camera.views import TakeImageFormView
 
 
 # Create your views here.
-class IndexView(HTMXMixin, TemplateView):
+class IndexView(LoginRequiredMixin, HTMXMixin, TemplateView):
     template_name = 'observation/index.html'
 
     def get_context_data(self, **kwargs):
@@ -18,9 +22,12 @@ class IndexView(HTMXMixin, TemplateView):
         return context
 
 
-class StartExposureFormView(HTMXMixin, FormView):
+class StartExposureFormView(TakeImageFormView):
     template_name = 'observation/exposure/index.html'
-    form_class = ObservationForm
+
+    def get_success_url(self):
+        image_id = self.image.id
+        return reverse_lazy('observation:running_exposure', kwargs={'obs_id': image_id})
 
     def get_initial(self):
         return {
@@ -29,7 +36,11 @@ class StartExposureFormView(HTMXMixin, FormView):
             if k in self.request.GET
         }
 
-    def form_valid(self, form):
-        response = super().form_valid(form)
 
-        return response
+class OngoingExposureView(LoginRequiredMixin, HTMXMixin, TemplateView):
+    template_name = 'observation/running/index.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['image'] = ImageSettings.objects.get(pk=self.kwargs['obs_id'])
+        return context
