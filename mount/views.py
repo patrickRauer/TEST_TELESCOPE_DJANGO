@@ -11,6 +11,11 @@ from alpaca.telescope import Telescope
 class IndexView(HTMXMixin, TemplateView):
     template_name = 'mount/index/index.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['park_form'] = ParkForm()
+        return context
+
 
 class SlewFormView(HTMXMixin, FormView):
     template_name = 'mount/slew/index.html'

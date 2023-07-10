@@ -5,5 +5,21 @@
 {% endblock %}
 
 {% block content %}
+<div class="flex">
+  <div>
+    <h3 class="ui center aligned header">
+      Park
+    </h3>
+    <form class="ui form">
+      {% csrf_token %}
+      {{ park_form }}
+      <div></div>
+      <button class="ui button">
+        Park
+      </button>
+    </form>
+  </div>
   <div hx-get="{% url 'mount:slew' %}" hx-trigger="load"></div>
+
+</div>
 {% endblock %}
