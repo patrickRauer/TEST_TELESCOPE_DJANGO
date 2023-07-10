@@ -79,6 +79,7 @@
         }
         .content {
             margin: 2rem;
+            flex-grow: 1;
         }
         .content-head {
             margin: 0 auto;
@@ -87,6 +88,9 @@
         .grid {
             display: grid;
             grid-template-columns: auto auto;
+        }
+        .gap {
+            grid-column-gap: 1rem;
         }
         .status {
             display: flex;
@@ -119,6 +123,13 @@
         }
         .flex-graph {
             flex-grow: 1;
+        }
+
+        .ui.list .list > .item .description, .ui.list > .item .description {
+            color: var(--text-color);
+        }
+        .ui.progress > .label {
+            color: var(--text-color) !important;
         }
     </style>
 </head>
@@ -164,11 +175,11 @@
         </ul>
     </div>
     <div class="app" id="htmx_root">
-        <main id="htmx_content">
+
             {% if inner_template %}
                 {% include inner_template %}
             {% endif %}
-        </main>
+
 
     </div>
     <div class="status" hx-ext="multi-swap" hx-swap="multi:#camera_status,#mount_status,#filter_wheel_status,#weather_status,#dome_status" hx-trigger="every 1s" hx-get="{% url 'status:device' %}">
