@@ -10,7 +10,7 @@ import time
 from alpaca.camera import Camera
 from alpaca.filterwheel import FilterWheel
 from alpaca.telescope import Telescope
-if 'REDIS_URL' in environ:
+"""if 'REDIS_URL' in environ:
     from celery import shared_task
 else:
     from threading import Thread
@@ -24,6 +24,9 @@ else:
             super().__init__()
             self.func = func
 
+        def __call__(self, *args, **kwargs):
+            return self.func(*args, **kwargs)
+
         def run(self) -> None:
             self.func(*self.args, **self.kwargs)
 
@@ -36,12 +39,17 @@ else:
 
         return AsyncTask(func)
 
-
+"""
+from celery import shared_task
 class ExposureError(Exception):
     ...
 
 
-def _get_devices():
+def _get_devices() -> tuple[FilterWheel, Camera]:
+    """
+    Takes the latest entry for the camera :class:`CameraDB` and filter wheel (:class:`FilterWheelDB`) from
+    the database and creates alpaca/alpyca :class:`Camera' and :class:`FilterWheel` objects out of it.
+    """
     filter_wheel = FilterWheelDB.objects.last()
     filter_wheel = FilterWheel(f'{filter_wheel.ip}:{filter_wheel.port}', filter_wheel.device_id)
     camera = CameraDB.objects.last()
@@ -50,6 +58,11 @@ def _get_devices():
 
 
 def _check_devices(filter_wheel: FilterWheel, camera: Camera):
+    """
+    Checks if the filter wheel, the camera and the mount are ready for an exposure.
+
+    :raise ExposureError: If one of the devices is not ready.
+    """
     if filter_wheel.Position == -1:
         raise ExposureError(b'Filter wheel moving')
 
@@ -59,13 +72,13 @@ def _check_devices(filter_wheel: FilterWheel, camera: Camera):
         raise ExposureError(b'Telescope slewing')
 
     if camera.CameraState != 0:
-        print(camera.CameraState)
-        print(camera.CameraState.__doc__)
         raise ExposureError(b'Camera is busy')
 
 
 def _apply_image_settings(image_settings: ImageSettings, filter_wheel: FilterWheel, camera: Camera):
-
+    """
+    Move the filter wheel in the right position and applies the image frame settings (size and binning).
+    """
     filter_wheel.Position = image_settings.filter.position
     while filter_wheel.Position == -1:
         time.sleep(0.1)
@@ -113,6 +126,11 @@ def _take_image(image_settings: ImageSettings, camera: Camera):
 
 @shared_task
 def perform_exposures(image_settings_id: int):
+    """
+    Applies the image settings and starts the actual exposure
+
+    :raise ExposureError: If the telescope is slewing, if the filter wheel is rotating or if the camera is busy.
+    """
     image_settings: ImageSettings = ImageSettings.objects.get(pk=image_settings_id)
     filter_wheel, camera = _get_devices()
 
@@ -136,5 +154,5 @@ def track_camera_temperature():
     Temperature.objects.create(
         temperature=temperature,
         cooler_on=cooler_on,
-        camera=Camera.objects.last()
+        camera=CameraDB.objects.last()
     )
