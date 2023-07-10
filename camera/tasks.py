@@ -1,11 +1,16 @@
+from asgiref.sync import async_to_sync
+from channels import layers
 from django.utils import timezone
+from django.db.models import Max, Avg
 from os import environ
 from pathlib import Path
+from threading import Thread
 from astropy.io import fits
 from filter_wheel.models import FilterWheel as FilterWheelDB
 from mount.models import Mount
 from .models import Camera as CameraDB, Image, ImageSettings, ReadOutTime, Temperature
 import time
+import json
 
 from alpaca.camera import Camera
 from alpaca.filterwheel import FilterWheel
@@ -43,6 +48,52 @@ else:
 from celery import shared_task
 class ExposureError(Exception):
     ...
+
+
+def _publish_update(layer, image_settings, exposure_time):
+    async_to_sync(layer.group_send)(
+        f"obs_{image_settings.id}",
+        {
+            "type": "observation_update",
+            'text': json.dumps(
+                {
+                    'exposure_time': exposure_time,
+                    'image_download': 0,
+                    'images_done': image_settings.images_done
+                }
+            )
+        }
+    )
+
+
+def _publish_readout_update(layer, image_settings, readout_time):
+    t0 = time.time()
+    dt = time.time()-t0
+    while dt < readout_time:
+        async_to_sync(layer.group_send)(
+            f"obs_{image_settings.id}",
+            {
+                "type": "observation_update",
+                'text': json.dumps(
+                    {
+                        'image_download': int(dt/readout_time*100),
+                    }
+                )
+            }
+        )
+        time.sleep(0.5)
+        dt = time.time() - t0
+    async_to_sync(layer.group_send)(
+        f"obs_{image_settings.id}",
+        {
+            "type": "observation_update",
+            'text': json.dumps(
+                {
+                    'image_download': 100,
+                }
+            )
+        }
+    )
 
 
 def _get_devices() -> tuple[FilterWheel, Camera]:
@@ -91,10 +142,12 @@ def _apply_image_settings(image_settings: ImageSettings, filter_wheel: FilterWhe
 
 
 def _take_image(image_settings: ImageSettings, camera: Camera):
+    layer = layers.get_channel_layer()
     camera.StartExposure(
         image_settings.exposure_time,
         image_settings.dark
     )
+    t0 = time.time()
     image = Image.objects.create(
         exposure_time=image_settings.exposure_time,
         frame=image_settings.frame,
@@ -103,10 +156,18 @@ def _take_image(image_settings: ImageSettings, camera: Camera):
         observer=image_settings.observer
     )
     while not camera.ImageReady:
+        print('send update')
+        _publish_update(layer, image_settings, time.time()-t0)
         time.sleep(0.5)
     image.finished_at = timezone.now()
     image.save()
     readout_time = time.time()
+
+    expected_readout_time = ReadOutTime.objects.filter(frame_id=image_settings.frame.id).values('seconds').annotate(
+        max_readout=Max('seconds'),
+        mean_readout=Avg('seconds')
+    ).values_list('max_readout', 'mean_readout')
+    Thread(target=_publish_readout_update, args=(layer, image_settings, expected_readout_time[0][0])).start()
     image_data = camera.ImageArray
     readout_time = time.time() - readout_time
     ReadOutTime.objects.create(
@@ -139,6 +200,10 @@ def perform_exposures(image_settings_id: int):
 
     for i in range(image_settings.repeats):
         _take_image(image_settings, camera)
+        image_settings.images_done += 1
+        image_settings.save()
+    layer = layers.get_channel_layer()
+    _publish_update(layer, image_settings, image_settings.exposure_time)
 
 
 @shared_task
