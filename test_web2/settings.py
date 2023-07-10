@@ -61,7 +61,8 @@ INSTALLED_APPS = [
     "debug_toolbar",
    # 'django_browser_reload',
     "django_components",
-    "django_components.safer_staticfiles"
+    "django_components.safer_staticfiles",
+    "django_celery_beat"
  #   'debug_toolbar_line_profiler'
 ]
 
@@ -131,14 +132,14 @@ TEMPLATES = [
 WSGI_APPLICATION = 'test_web2.wsgi.application'
 ASGI_APPLICATION = 'test_web2.asgi.application'
 
-"""CHANNEL_LAYERS = {
+CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
             "hosts": [("127.0.0.1", 6379)],
         },
     },
-}"""
+}
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
@@ -198,3 +199,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 BASE_TEMPLATE = 'main/base.html'
 
+# CELERY
+CELERY_TIMEZONE = "Australia/Tasmania"
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60
+BROKER_URL = 'redis://127.0.0.1:6379'
+CELERYD_MAX_TASKS_PER_CHILD = 100
