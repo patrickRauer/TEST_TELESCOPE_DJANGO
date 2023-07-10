@@ -1,6 +1,21 @@
 from django.apps import AppConfig
 
 
+def _create_default_periodic_tasks():
+    from django_celery_beat.models import PeriodicTask, IntervalSchedule
+
+    interval, _ = IntervalSchedule.objects.get_or_create(
+        period='minutes',
+        every=1
+    )
+    PeriodicTask.objects.get_or_create(
+        name='Track camera temperature',
+        interval=interval,
+        task='camera.tasks.track_camera_temperature',
+        description='Reads the temperature of the camera and save the value to the database'
+    )
+
+
 def _create_dummy_camera_entry():
     from camera.models import Camera
 
@@ -19,3 +34,5 @@ class CameraConfig(AppConfig):
 
     def ready(self):
         _create_dummy_camera_entry()
+        _create_default_periodic_tasks()
+        from camera import tasks
