@@ -12,6 +12,8 @@
     <script src="https://unpkg.com/htmx.org/dist/ext/ws.js"></script>
     <script src="https://unpkg.com/htmx.org/dist/ext/multi-swap.js"></script>
 
+    <script src="https://cdn.plot.ly/plotly-2.24.1.min.js" charset="utf-8"></script>
+
     <style>
         :root {
             --bg-color: rgba(20 20 20 / 100%);
@@ -29,6 +31,9 @@
             flex-direction: column;
             color: var(--text-color);
             background-color: var(--bg-color);
+        }
+        .ui.header {
+            color: var(--text-color);
         }
         nav {
             display: flex;
@@ -106,6 +111,14 @@
         }
         .status-ws >label::after {
             content: ":";
+        }
+
+        .flex {
+            display: flex;
+            gap: 1rem;
+        }
+        .flex-graph {
+            flex-grow: 1;
         }
     </style>
 </head>
