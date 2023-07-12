@@ -30,6 +30,10 @@ class Frame(models.Model):
     bin_x = models.PositiveSmallIntegerField(default=1)
     bin_y = models.PositiveSmallIntegerField(default=1)
 
+    def __str__(self):
+        return f'x0: {self.start_x}, y0: {self.start_y}, width: {self.width}, height: {self.height} ' \
+               f'bin: ({self.bin_x}, {self.bin_y})'
+
 
 class ReadOutTime(models.Model):
     """
