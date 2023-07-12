@@ -124,11 +124,7 @@ class TakeImageFormView(LoginRequiredMixin, HTMXMixin, FormView):
             return HttpResponse(b'Camera is busy', status=400)
 
         data = form.cleaned_data
-        frame, _ = Frame.objects.get_or_create(
-            start_x=data['start_x'], start_y=data['start_y'],
-            width=data['width'], height=data['height'],
-            bin_x=data['bin_x'], bin_y=data['bin_y']
-        )
+        frame = data['frame']
         self.image = ImageSettings.objects.create(
             exposure_time=data['exposure_time'],
             frame=frame,

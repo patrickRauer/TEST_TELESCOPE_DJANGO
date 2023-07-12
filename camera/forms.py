@@ -1,5 +1,5 @@
 from django import forms
-from .models import Camera
+from .models import Camera, Frame
 from filter_wheel.models import Filter
 
 
@@ -17,14 +17,8 @@ class CoolerForm(forms.Form):
 
 
 class ImageForm(forms.Form):
-    start_x = forms.IntegerField(min_value=0, max_value=4096, initial=0)
-    start_y = forms.IntegerField(min_value=0, max_value=4096, initial=0)
-
-    width = forms.IntegerField(min_value=256, max_value=4096, initial=4096)
-    height = forms.IntegerField(min_value=256, max_value=4096, initial=4096)
-
-    bin_x = forms.IntegerField(min_value=1, max_value=4, initial=1)
-    bin_y = forms.IntegerField(min_value=1, max_value=4, initial=1)
+    name = forms.CharField()
+    frame = forms.ModelChoiceField(Frame.objects)
 
     filter = forms.ModelChoiceField(Filter.objects)
 
