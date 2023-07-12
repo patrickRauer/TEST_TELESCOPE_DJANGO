@@ -1,5 +1,6 @@
 from django.db import models
 from filter_wheel.models import Filter
+from camera.models import Frame
 # Create your models here.
 
 
@@ -8,6 +9,9 @@ class Type(models.Model):
     Astronomical type
     """
     name = models.CharField(max_length=40, help_text='Name of the type like "Exoplanet", "QSO" and so on')
+
+    def __str__(self):
+        return self.name
 
 
 class Target(models.Model):
@@ -25,6 +29,9 @@ class Target(models.Model):
         help_text='The type of the target'
     )
 
+    def __str__(self):
+        return self.name
+
 
 class CatalogItem(models.Model):
     """
@@ -37,6 +44,7 @@ class CatalogItem(models.Model):
         null=True, help_text='The target for this catalog entry'
     )
     filter = models.ForeignKey(Filter, on_delete=models.SET_NULL, null=True, help_text='The to used filter')
+    frame = models.ForeignKey(Frame, on_delete=models.SET_NULL, null=True, help_text='The used camera frame')
 
     exposure_time = models.FloatField(help_text='The exposure time in seconds')
     capture = models.ImageField(null=True, blank=True, help_text='Preview of the target')
@@ -46,3 +54,6 @@ class CatalogItem(models.Model):
         auto_now_add=True,
         help_text='The datetime when the entry was updated the last time'
     )
+
+    def __str__(self):
+        return self.name
