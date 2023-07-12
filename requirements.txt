@@ -11,3 +11,7 @@ celery
 astropy
 plotly
 pandas
+asgiref
+requests
+beautifulsoup4
+python-dotenv

@@ -25,6 +25,7 @@ urlpatterns = [
     path('mount/', include('mount.urls', namespace='mount')),
     path('camera/', include('camera.urls', namespace='camera')),
     path('dome/', include('dome.urls', namespace='dome')),
+    path('weather/', include('weather.urls', namespace='weather')),
     path('status/', include('status.urls', namespace='status')),
     path('__debug__/', include('debug_toolbar.urls')),
     path("__reload__/", include("django_browser_reload.urls")),
