@@ -10,15 +10,34 @@ from camera.forms import ImageForm
 from camera.models import Image, ImageSettings
 from camera.views import TakeImageFormView
 
+from catalog.models import CatalogItem
+
 
 # Create your views here.
 class IndexView(LoginRequiredMixin, HTMXMixin, TemplateView):
     template_name = 'observation/index.html'
+    catalog_item = None
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['slew'] = {'form': SlewForm()}
-        context['image'] = {'form': ImageForm()}
+        image_form_initial = {}
+        slew_initial = {}
+        if 'catalog_id' in self.request.GET:
+            catalog_item = CatalogItem.objects.get(pk=self.request.GET['catalog_id'])
+            image_form_initial = {
+                'name': catalog_item.name,
+                'frame': catalog_item.frame.pk,
+                'exposure_time': catalog_item.exposure_time,
+                'filter': catalog_item.filter
+            }
+            slew_initial = {
+                'ra': catalog_item.target.ra,
+                'dec': catalog_item.target.dec
+            }
+
+        context['slew'] = {'form': SlewForm(initial=slew_initial)}
+        context['image'] = {'form': ImageForm(initial=image_form_initial)}
+
         return context
 
 
