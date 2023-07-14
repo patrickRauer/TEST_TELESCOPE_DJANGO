@@ -124,13 +124,21 @@
         .flex-graph {
             flex-grow: 1;
         }
-
+        .ui.list > .item::after, .ui.list > .list > .item::after, ol.ui.list > li:first-child::after, ul.ui.list > li:first-child::after {
+            background-color: var(--bg-color-content) !important;
+        }
+        .ui.list .list > .item > .content, .ui.list > .item > .content {
+            background-color: var(--bg-color-content);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+        }
         .ui.list .list > .item .description, .ui.list > .item .description {
             color: var(--text-color);
         }
         .ui.progress > .label {
             color: var(--text-color) !important;
         }
+
     </style>
 </head>
 <body>
