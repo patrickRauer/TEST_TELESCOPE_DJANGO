@@ -1,0 +1,13 @@
+{% if graph %}
+    <div id="visibility_chart">
+
+    </div>
+
+    <script>
+        Plotly.newPlot('visibility_chart', {{ graph|safe }})
+    </script>
+{% else %}
+    <div>
+        <strong>No target coordinates</strong>
+    </div>
+{% endif %}
