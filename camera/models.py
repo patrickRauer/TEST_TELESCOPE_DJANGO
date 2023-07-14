@@ -69,12 +69,14 @@ class Image(AbstractImage):
         return {
             'frame': f'[{self.frame.start_x},{self.frame.start_y};{self.frame.width},{self.frame.height}]',
             'filter': self.filter.name,
+            'imagetype': 'science',
             'filter_letter': self.filter.letter,
             'observer': self.observer.username,
             'obs_time': '',
             'obs_local_start': str(self.started_at),
             'obs_local_end': str(self.finished_at),
-            'exposure_time': self.exposure_time
+            'exposure_time': self.exposure_time,
+
         }
 
 
