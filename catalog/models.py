@@ -57,3 +57,10 @@ class CatalogItem(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Location(models.Model):
+    name = models.CharField(max_length=50)
+    latitude = models.FloatField(help_text="Latitude of the location in degrees")
+    longitude = models.FloatField(help_text="Longitude of the location in degrees")
+    altitude = models.FloatField(help_text="Altitude of the location in meters")
