@@ -41,7 +41,7 @@ class VisibilityChart(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         ra = self.request.GET.getlist('ra')
-        if len(ra) == 0:
+        if len(ra) == 0 or ra[0] == '':
             return context
         dec = self.request.GET.getlist('dec')
         location = Location.objects.get(pk=self.request.GET['location']) \
@@ -51,7 +51,7 @@ class VisibilityChart(LoginRequiredMixin, TemplateView):
         height = location.altitude
         ra = np.float32(ra)
         dec = np.float32(dec)
-        print(ra, dec)
+
         coords = SkyCoord(ra*u.deg, dec*u.deg)
         location = EarthLocation(lat=lat, lon=lon, height=height)
         times = np.linspace(-12, 12, 1000)*u.hour
