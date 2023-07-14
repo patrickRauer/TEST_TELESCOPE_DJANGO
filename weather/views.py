@@ -23,10 +23,20 @@ def _concat_dataframe(df: pd.DataFrame, labels, goal_column_name):
 class IndexView(LoginRequiredMixin, HTMXMixin, TemplateView):
     template_name = 'weather/index.html'
 
+    def get_from_date(self):
+        if 'from_date' in self.request.GET:
+            ...  # parsing input date
+        return timezone.now()-timezone.timedelta(days=7)
+
+    def get_to_date(self):
+        if 'to_date' in self.request.GET:
+            ...  # parsing input date
+        return timezone.now()
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        to_date = timezone.now()
-        from_data = to_date-timezone.timedelta(days=7)
+        to_date = self.get_to_date()
+        from_data = self.get_from_date()
         df = pd.DataFrame(
             Data.objects.filter(date__gte=from_data, date__lte=to_date).values(
                 'date', 'temperature', 'temperature_dome', 'dewpoint',
@@ -47,6 +57,7 @@ class IndexView(LoginRequiredMixin, HTMXMixin, TemplateView):
             {
                 'plot_bgcolor': 'rgba(0, 0, 0, 0)',
                 'paper_bgcolor': 'rgba(0, 0, 0, 0)',
+                'font_color': 'rgba(220, 220, 220, 0.8)'
             }
         )
         context['graph'] = {
