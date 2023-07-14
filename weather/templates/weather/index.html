@@ -1,0 +1,22 @@
+{% extends 'htmx/one_column_inner_template.html' %}
+
+{% block head %}
+    Weather
+{% endblock %}
+
+{% block content %}
+    {% if graph %}
+    <div>
+        <div id="weather"></div>
+    </div>
+    <script>
+        Plotly.newPlot(
+            'weather', {{ graph.temperature|safe }}
+        )
+    </script>
+    {% else %}
+    <span>
+        No weather data available
+    </span>
+    {% endif %}
+{% endblock %}
