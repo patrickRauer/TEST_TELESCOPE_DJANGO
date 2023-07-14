@@ -25,7 +25,7 @@
       <div>
 
         <h3>Slew</h3>
-        <form>
+        <form id="slew_form">
           {% csrf_token %}
           {{ slew.form }}
           <div></div>
@@ -38,7 +38,9 @@
   </div>
   <div class="column">
     <div>Graphical presentation</div>
-    <div>visibility chart</div>
+    <div hx-get="{% url 'catalog:visibility_chart' %}" hx-trigger="load" hx-include="[id='slew_form']">
+        <div class="ui active loader"></div>
+    </div>
     <div>pointing chart</div>
   </div>
 </div>
