@@ -10,6 +10,8 @@ from alpaca.telescope import Telescope
 
 from filter_wheel.models import FilterWheel as FilterWheelDB
 from alpaca.filterwheel import FilterWheel
+
+from weather.models import Data
 # Create your views here.
 
 
@@ -17,22 +19,24 @@ class StatusView(LoginRequiredMixin, TemplateView):
     template_name = 'status/index.html'
 
     def get_weather_status(self):
-
-        return {
-            'status': {
-                'temperature': {
-                    'in': 0,
-                    'out': 0,
-                },
-                'humidity': {
-                    'in': 10,
-                    'out': 10,
-                },
-                'wind': {
-                    'ground': 10
+        data = Data.objects.last()
+        if data is None:
+            return {
+                'status': {
+                    'temperature': {
+                        'in': 0,
+                        'out': 0,
+                    },
+                    'humidity': {
+                        'in': 10,
+                        'out': 10,
+                    },
+                    'wind': {
+                        'ground': 10
+                    }
                 }
             }
-        }
+        return {'status': data.to_status()}
 
     def get_filter_wheel_status(self):
         filter_wheel = FilterWheelDB.objects.last()
