@@ -1,8 +1,12 @@
-from django.shortcuts import render
 from django.views.generic import TemplateView, FormView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from htmx.views import HTMXMixin
+
+from plotly import express as px
+from astropy.io import fits
+import numpy as np
+import time
 
 from .forms import ObservationForm
 from mount.forms import SlewForm
@@ -62,4 +66,36 @@ class OngoingExposureView(LoginRequiredMixin, HTMXMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['image'] = ImageSettings.objects.get(pk=self.kwargs['obs_id'])
+        return context
+
+
+class ImageView(LoginRequiredMixin, HTMXMixin, TemplateView):
+    template_name = 'observation/running/image.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # image = Image.objects.get(pk=self.kwargs['image_id'])
+        with fits.open('./images/NGC6888-001-Clear.fits') as fi:
+
+            data = np.int16(fi[0].data//256)
+            shape = data.shape
+            data = data.reshape(shape[0]//4, 4, shape[1]//4, 4).sum(3).sum(1)
+            if 'zmin' in self.request.GET:
+                zmin = float(self.request.GET['zmin'])
+                data[data < zmin] = zmin
+            if 'zmax' in self.request.GET:
+                zmax = float(self.request.GET['zmax'])
+                data[data > zmax] = zmax
+            if 'log' == self.request.GET.get('scale', 'linear'):
+                data = np.log10(data)
+        t0 = time.time()
+        fig = px.imshow(data)
+        fig.update_layout(
+            {
+                'plot_bgcolor': 'rgba(0, 0, 0, 0)',
+                'paper_bgcolor': 'rgba(0, 0, 0, 0)',
+                'font_color': 'rgba(220, 220, 220, 0.8)'
+            }
+        )
+        context['image'] = fig.to_json()
         return context

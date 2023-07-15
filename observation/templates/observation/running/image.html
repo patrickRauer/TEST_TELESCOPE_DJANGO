@@ -1,0 +1,13 @@
+{% extends 'htmx/one_column_inner_template.html' %}
+
+{% block content %}
+
+{% if image %}
+    <div id="image"></div>
+    <script>
+        Plotly.newPlot('image', {{ image|safe }});
+    </script>
+{% else %}
+
+{% endif %}
+{% endblock %}
