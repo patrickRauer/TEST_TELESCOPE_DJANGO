@@ -1,0 +1,12 @@
+<div class="flex-graph">
+    <h3 class="ui header">
+        {{ header}}
+    </h3>
+    <form hx-post="{% url url_short %}" hx-swap="none">
+        {% csrf_token %}
+        {{ form }}
+        <button class="ui button">
+            {{ button_label }}
+        </button>
+    </form>
+</div>

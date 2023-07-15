@@ -1,0 +1,38 @@
+{% extends 'htmx/one_column_inner_template.html' %}
+
+
+{% block head %}
+Dome
+{% endblock %}
+
+
+{% block content %}
+    <div class="flex">
+        <div class="flex-graph">
+            <h3 class="ui header">
+                Shutter
+            </h3>
+            <form
+                    x-data="{'status': '{{ shutter.status }}', 'response': ''}"
+                    @htmx:after-request.camel="if($event.xhr.status !== 201){response='Something went wrong'}else {response=''}"
+            >
+                {% csrf_token %}
+                <span x-show="response !== ''" x-text="response"></span>
+                <button class="ui button" :class="{'disabled': status === 'moving'}">
+                    <div x-show="status === 'moving'">
+                        Is moving...
+                    </div>
+                    <div x-show="status === 'open'">
+                        Close
+                    </div>
+                    <div x-show="status === 'close'">
+                        Open
+                    </div>
+                </button>
+            </form>
+        </div>
+        {% include 'dome/index/form.html' with url_short='dome:auto_alignment' header='Auto alignment' form=auto_alignment_form button_label='Change' %}
+        {% include 'dome/index/form.html' with url_short='dome:move' header='Move dome' form=move_dome_form button_label='Move dome' %}
+
+    </div>
+{% endblock %}

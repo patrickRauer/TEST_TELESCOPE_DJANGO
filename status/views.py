@@ -12,6 +12,9 @@ from filter_wheel.models import FilterWheel as FilterWheelDB
 from alpaca.filterwheel import FilterWheel
 
 from weather.models import Data
+
+from dome.tasks import _get_dome
+from dome.models import Dome
 # Create your views here.
 
 
@@ -62,9 +65,12 @@ class StatusView(LoginRequiredMixin, TemplateView):
         }
 
     def get_dome_status(self):
+        dome = _get_dome()
+        dome_db = Dome.objects.last()
         return {
             'status':  {
-                'open': False,
+                'shutter': dome.get_shutter_status(),
+                'auto_alignment': 'activated' if dome_db.auto_alignment else 'deactivated',
                 'az': '00:00:00',
             }
         }
